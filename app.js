@@ -4,15 +4,10 @@ const connectDb = require("./src/config/databases");
 const User = require("./src/models/user");
 
 app.use(express.json());
+
+//for adding the new users into the database
 app.post("/signup",async (req,res)=>{
 
-   
-    // const userdata = {
-    //     firstName:"virat",
-    //     lastName:"kohli",
-    //     email:"swapnasruthi2005gmail.com",
-    //     gender:"female"
-    // }
     const user = new User(req.body);
     try{
         await user.save();
@@ -20,6 +15,36 @@ app.post("/signup",async (req,res)=>{
     }
     catch(err){
         res.status(400).send("error saving the user"+err.message);
+    }
+});
+
+//for fetching only a single user using the particular email.
+app.get("/user",async (req,res)=>{
+    try{
+    const user =await User.find();
+    if(user.length === 0){
+        res.send("user not found!");
+
+    }else{
+        res.send(user);
+
+    }
+    }
+    catch(err){
+        res.status(500).send("something went wrong!");
+    }
+
+});
+
+//FEED Api - fetching all the users from the databse.
+app.get("/feed",async(req,res)=>{
+    try
+    {
+    const users = await User.find({});
+    res.send(users);
+}
+    catch(err){
+        res.status(500).send("something went wrong!");
     }
 })
 connectDb()
