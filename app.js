@@ -63,14 +63,19 @@ app.delete("/user",async (req,res)=>{
 //api to update a user.
 app.patch("/user",async (req,res)=>{
     try{
-        const user = await User.findByIdAndUpdate({_id:req.body.userid}, {lastName:"majji",firstName:"swapna"});
+        const data = req.body;
+        const user = await User.findByIdAndUpdate({_id:req.body.userid}, data,{
+            runValidators:true,
+        });
         res.send("user updated successfully!");
     }
     catch(err){
-        res.status(500).send("something went wrong!");
+        res.status(500).send("update failed!"+ err.message);
     }
     
 });
+
+
 connectDb()
 .then(
     ()=>{
