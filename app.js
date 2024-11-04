@@ -3,6 +3,10 @@ const app = express();
 const connectDb = require("./src/config/databases");
 const User = require("./src/models/user");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+
+app.use(cookieParser());
 app.use(express.json());
 
 //for adding the new users into the database
@@ -37,6 +41,10 @@ app.post("/login",async (req,res)=>{
         }
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if(isPasswordValid){
+            //creating jwt token 
+
+            const token = await jwt.sign({_id:user._id},"DevTinder@123");
+            res.cookie("token",token);
             res.send("Login successfull!");
     
         }
@@ -48,7 +56,26 @@ app.post("/login",async (req,res)=>{
         res.status(500).send("Error:"+err.message);
     }
 
-})
+});
+
+app.get("/profile",async (req,res)=>{
+    try{
+        const {token} = req.cookies;
+        if(!token){
+            throw new Error("Invalid Token, Login again");
+        }
+        const decodedMsg = await jwt.verify(token, "DevTinder@123");
+        const {_id} = decodedMsg;
+        const user = await User.findOne({_id});
+        if(!user){
+            throw new Error("User is not exist!");  
+        }
+        res.send(user);
+    }
+    catch(err){
+        res.status(500).send("Error:"+err.message);
+    }
+});
 
 //for fetching only a single user using the particular email.
 app.get("/user",async (req,res)=>{
