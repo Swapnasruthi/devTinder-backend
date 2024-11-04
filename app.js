@@ -2,14 +2,24 @@ const express = require("express");
 const app = express();
 const connectDb = require("./src/config/databases");
 const User = require("./src/models/user");
-
+const bcrypt = require("bcrypt");
 app.use(express.json());
 
 //for adding the new users into the database
 app.post("/signup",async (req,res)=>{
 
-    const user = new User(req.body);
+    
     try{
+        //validating the data
+            //validation is done at the schema level of the modal itself. hence helper func is created.
+        const {firstName, lastName, email, password} = req.body;
+        //encrypting the password.
+            //generating a hash password using bcrypt.
+        const passwordHash = await bcrypt.hash(password, 10);
+
+        const user = new User({
+            firstName,lastName, email, password: passwordHash
+        });
         await user.save();
         res.send("user added successfully!")
     }
@@ -17,6 +27,28 @@ app.post("/signup",async (req,res)=>{
         res.status(400).send("error saving the user"+err.message);
     }
 });
+
+app.post("/login",async (req,res)=>{
+    try{
+        const {email, password} = req.body;
+        const user = await User.findOne({email:email});
+        if(!user){
+            throw new Error("User not fount!");
+        }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if(isPasswordValid){
+            res.send("Login successfull!");
+    
+        }
+        else{
+            throw new Error("password incorrect!");
+        }
+    }
+    catch(err){
+        res.status(500).send("Error:"+err.message);
+    }
+
+})
 
 //for fetching only a single user using the particular email.
 app.get("/user",async (req,res)=>{
@@ -31,7 +63,7 @@ app.get("/user",async (req,res)=>{
     }
     }
     catch(err){
-        res.status(500).send("something went wrong!");
+        res.status(500).send("Error:"+err.message);
     }
 
 });
