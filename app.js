@@ -2,73 +2,23 @@ const express = require("express");
 const app = express();
 const connectDb = require("./src/config/databases");
 const User = require("./src/models/user");
-const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
-const {UserAuth} = require("./src/middlewares/auth");
 
 app.use(cookieParser());  //--> to read cookies from the request.
 app.use(express.json());  //--> to read json data from the Db.
 
-//for adding the new users into the database
-app.post("/signup",async (req,res)=>{
 
-    
-    try{
-        //validating the data
-            //validation is done at the schema level of the modal itself. hence helper func is created.
-        const {firstName, lastName, email, password} = req.body;
-        //encrypting the password.
-            //generating a hash password using bcrypt.
-        const passwordHash = await bcrypt.hash(password, 10);
 
-        const user = new User({
-            firstName,lastName, email, password: passwordHash
-        });
-        await user.save();
-        res.send("user added successfully!")
-    }
-    catch(err){
-        res.status(400).send("error saving the user"+err.message);
-    }
-});
+const profileAuth = require("./src/routes/profile");
+const authRouter = require("./src/routes/auth");
+const requestAuth = require("./src/routes/request");
 
-app.post("/login", async (req,res)=>{
-    try{
-        const {email, password} = req.body;
-        const user = await User.findOne({email:email});
-        if(!user){
-            throw new Error("User not fount!");
-        }
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if(isPasswordValid){
-            //creating jwt token 
 
-            const token = await jwt.sign({_id:user._id},"DevTinder@123");
-            res.cookie("token",token);
-            res.send("Login successfull!");
-    
-        }
-        else{
-            throw new Error("Invalid Credentails!");
-        }
-    }
-    catch(err){
-        res.status(500).send("Error:"+err.message);
-    }
+app.use("/",profileAuth);
+app.use("/",requestAuth);
+app.use("/",profileAuth);
 
-});
-
-app.get("/profile",UserAuth, async (req,res)=>{
-    try{
-        
-        
-        res.send(req.User);
-    }
-    catch(err){
-        res.status(500).send("Error:"+err.message);
-    }
-});
 
 //for fetching only a single user using the particular email.
 app.get("/user",async (req,res)=>{
@@ -113,36 +63,7 @@ app.delete("/user",async (req,res)=>{
 });
 
 //api to update a user.
-app.patch("/user/:userid",async (req,res)=>{
-    const userId = req.params?.userid;
-    const data = req.body;
-    try{
-        
-        const  ALLOWED_UPDATES = [
-            "password",
-            "gender",
-            "age",
-            "userphoto",
-            "about",
-            "skills"
 
-        ];
-       const isUpdatesAllowed = Object.keys(data).every((k)=> 
-        ALLOWED_UPDATES.includes(k)
-       );
-        if(!isUpdatesAllowed){
-            throw new Error("update is not allowed!");  
-        }
-        const user = await User.findByIdAndUpdate({_id: userId}, data,{
-            runValidators:true,
-        });
-        res.send("user updated successfully!");
-    }
-    catch(err){
-        res.status(500).send("update failed!"+ err.message);
-    }
-    
-});
 
 
 connectDb()

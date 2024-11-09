@@ -4,6 +4,7 @@ const UserAuth = async (req,res,next)=>{
                       //read the token
                       try{
                         const {token} = req.cookies;
+                        console.log(token);
                       //verify the token
                         if(!token){
                           throw new error("token not valid!");
