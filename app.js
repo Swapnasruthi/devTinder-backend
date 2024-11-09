@@ -5,6 +5,7 @@ const User = require("./src/models/user");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const {UserAuth} = require("./src/middlewares/auth");
 
 app.use(cookieParser());  //--> to read cookies from the request.
 app.use(express.json());  //--> to read json data from the Db.
@@ -32,7 +33,7 @@ app.post("/signup",async (req,res)=>{
     }
 });
 
-app.post("/login",async (req,res)=>{
+app.post("/login", async (req,res)=>{
     try{
         const {email, password} = req.body;
         const user = await User.findOne({email:email});
@@ -58,19 +59,11 @@ app.post("/login",async (req,res)=>{
 
 });
 
-app.get("/profile",async (req,res)=>{
+app.get("/profile",UserAuth, async (req,res)=>{
     try{
-        const {token} = req.cookies;
-        if(!token){
-            throw new Error("Invalid Token, Login again");
-        }
-        const decodedMsg = await jwt.verify(token, "DevTinder@123");
-        const {_id} = decodedMsg;
-        const user = await User.findOne({_id});
-        if(!user){
-            throw new Error("User is not exist!");  
-        }
-        res.send(user);
+        
+        
+        res.send(req.User);
     }
     catch(err){
         res.status(500).send("Error:"+err.message);
