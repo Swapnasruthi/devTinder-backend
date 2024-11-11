@@ -12,7 +12,6 @@ profileAuth.get("/profile",UserAuth, async (req,res)=>{
     try{
         const {token} = req.cookies;
       
-        
         res.send(req.User);
     }
     catch(err){
@@ -28,6 +27,8 @@ profileAuth.patch("/profile/edit", UserAuth, async (req,res)=>{
 
         const loggedUser = req.User;
         Object.keys(req.body).forEach((key) => (loggedUser[key] = req.body[key]));
+        
+
         await loggedUser.save();
         res.send("user updated");
   
@@ -38,10 +39,21 @@ profileAuth.patch("/profile/edit", UserAuth, async (req,res)=>{
 });
 
 profileAuth.patch("/profile/password", UserAuth, async (req,res)=>{
-    const loggedUser = req.User;
-    const isPasswordTrue = await bcrypt.compare(req.body.password, loggedUser.password);
-    console.log(isPasswordTrue);
-    res.send("successfull");
-})
+    try{
+        const loggedUser = req.User;
+        const isPasswordTrue = await bcrypt.compare(req.body.password, loggedUser.password);
+        if(!isPasswordTrue){
+            throw new Error("your current password is incorrect!");
+        }
+        const newHashPassword = await bcrypt.hash(req.body.newPassword, 10);
+        loggedUser.password = newHashPassword;
+        await loggedUser.save();
+        res.send("successfully changed password!");
+    }
+    catch(err){
+        res.status(500).send("error:"+err.message);
+    }
+  
+});
 
 module.exports = profileAuth;
