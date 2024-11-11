@@ -10,15 +10,19 @@ authRouter.use(express.json());  //--> to read json data from the Db.
 authRouter.post("/signup",async (req,res)=>{
     try{
         //validating the data
-            //validation is done at the schema level of the modal itself. hence helper func is created.
+            //validation is done at the schema level of the modal itself. hence helper func is not created.
         const {firstName, lastName, email, password} = req.body;
+
         //encrypting the password.
             //generating a hash password using bcrypt.
+        
+
         const passwordHash = await bcrypt.hash(password, 10);
 
         const user = new User({
             firstName,lastName, email, password: passwordHash
         });
+       
         await user.save();
         res.send("user added successfully!")
     }

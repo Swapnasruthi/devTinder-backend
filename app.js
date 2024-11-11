@@ -3,7 +3,6 @@ const app = express();
 const connectDb = require("./src/config/databases");
 const User = require("./src/models/user");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
 
 app.use(cookieParser());  //--> to read cookies from the request.
 app.use(express.json());  //--> to read json data from the Db.
