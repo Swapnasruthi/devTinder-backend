@@ -17,7 +17,7 @@ const requestAuth = require("./src/routes/request");
 
 app.use("/",profileAuth);
 app.use("/",requestAuth);
-app.use("/",profileAuth);
+app.use("/",authRouter);
 
 
 //for fetching only a single user using the particular email.

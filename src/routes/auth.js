@@ -33,14 +33,14 @@ authRouter.post("/login", async (req,res)=>{
         const {email, password} = req.body;
         const user = await User.findOne({email:email});
         if(!user){
-            throw new Error("User not fount!");
+            throw new Error("User not found!");
         }
         const isPasswordValid = await user.validatePassword(password);
         if(isPasswordValid){
             //creating jwt token 
 
             const token = await user.createToken();
-            console.log(token);
+
             res.cookie("token",token);
             res.send("Login successfull!");
     
@@ -54,5 +54,12 @@ authRouter.post("/login", async (req,res)=>{
     }
 
 });
+
+authRouter.post("/logout",(req,res)=>{
+    res.cookie("token",{},{
+        expires: new Date(Date.now()),
+   });
+    res.send("logout successfully!");
+}); 
 
 module.exports = authRouter;
