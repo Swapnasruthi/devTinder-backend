@@ -4,10 +4,10 @@ const UserAuth = async (req,res,next)=>{
                       //read the token
                       try{
                         const {token} = req.cookies;
-                      
+                     
                       //verify the token
                         if(!token){
-                          throw new error("token not valid!");
+                          throw new Error("token not valid!");
                         }
                       //decoding the token to get the id
                         const decodedId = await jwt.verify(token, "DevTinder@123");
@@ -25,7 +25,7 @@ const UserAuth = async (req,res,next)=>{
                         next();
                       }
                       catch(err){
-                        res.status(500).send("error found:"+err.message);
+                        res.status(400).send("error found:"+err.message);
                       }
                      
                     }

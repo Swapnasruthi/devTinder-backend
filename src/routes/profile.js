@@ -11,7 +11,8 @@ profileAuth.use(express.json());  //--> to read json data from the Db.
 profileAuth.get("/profile",UserAuth, async (req,res)=>{
     try{
         const {token} = req.cookies;
-      
+     
+       
         res.send(req.User);
     }
     catch(err){
