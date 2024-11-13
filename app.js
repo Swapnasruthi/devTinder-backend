@@ -12,11 +12,12 @@ app.use(express.json());  //--> to read json data from the Db.
 const profileAuth = require("./src/routes/profile");
 const authRouter = require("./src/routes/auth");
 const requestAuth = require("./src/routes/request");
-
+const userAuth = require("./src/routes/user");
 
 app.use("/",profileAuth);
 app.use("/",requestAuth);
 app.use("/",authRouter);
+app.use("/",userAuth);
 
 
 //for fetching only a single user using the particular email.
