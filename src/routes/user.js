@@ -55,6 +55,10 @@ userAuth.get("/user/connections", UserAuth, async(req,res)=>{
 userAuth.get("/feed", UserAuth, async(req,res)=>{
     try{
         const loggedUser = req.User;
+        const page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 10;
+        limit = limit>50 ? 50 : limit;
+        const size = (page-1) * limit;
         const connections = await ConnectionRequest.find({
             $or:[
                 {fromUserId: loggedUser._id},
@@ -67,14 +71,14 @@ userAuth.get("/feed", UserAuth, async(req,res)=>{
             ignoredConnections.add(req.fromUserId.toString());
             ignoredConnections.add(req.toUserId.toString());
         });
-        console.log(ignoredConnections);
+        
         const usersFeed = await User.find({
             // $and:[
             //     {_id: {$nin: Array.from(ignoredConnections)}},
             //     {_id :{$ne: loggedUser._id}}
             // ]
             _id: {$nin: Array.from(ignoredConnections)}
-        }).select("firstName lastName gender");
+        }).select("firstName lastName gender").skip(size).limit(limit);
         res.send(usersFeed);
     }
     catch(err){
