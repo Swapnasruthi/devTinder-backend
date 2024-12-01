@@ -7,13 +7,13 @@ const userSchema = mongoose.Schema(
         firstName: {
             type:String,
             required:true,
-            minLength:4,
+         
             maxLenght:50,
 
         },
         lastName: {
             type:String,
-            minLength:4,
+          
             maxLenght:50,
         },
         email: {
@@ -31,7 +31,7 @@ const userSchema = mongoose.Schema(
         gender: {
             type:String,
             enum:{
-                values:["female","male","others"],
+                values:["female","male","others","Female","Male"],
                 message:'{VALUE} is not supported'
             }
            
@@ -52,6 +52,7 @@ const userSchema = mongoose.Schema(
         },
         userPhoto:{
             type:String,
+            default:"https://cdn-icons-png.flaticon.com/512/3177/3177440.png",
         },
         about:{
             type:String,

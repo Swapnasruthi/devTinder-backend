@@ -30,8 +30,8 @@ profileAuth.patch("/profile/edit", UserAuth, async (req,res)=>{
         Object.keys(req.body).forEach((key) => (loggedUser[key] = req.body[key]));
         
 
-        await loggedUser.save();
-        res.send("user updated");
+        const data = await loggedUser.save();
+        res.send(data);
   
     }
     catch(err){

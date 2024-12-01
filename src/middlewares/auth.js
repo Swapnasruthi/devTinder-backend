@@ -7,7 +7,7 @@ const UserAuth = async (req,res,next)=>{
                      
                       //verify the token
                         if(!token){
-                          throw new Error("token not valid!");
+                          return res.status(401).send("unAuthorised User!");
                         }
                       //decoding the token to get the id
                         const decodedId = await jwt.verify(token, "DevTinder@123");

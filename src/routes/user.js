@@ -6,13 +6,14 @@ const User = require("../models/user.js");
 userAuth.get("/user/requests", UserAuth, async (req,res)=>{
     try{
         const loggedUser = req.User;
+        const allowedFields = "firstName lastName gender skills about userPhoto age";
         if(!loggedUser){
             throw new Error("Please LogIn");
         }
         const requests = await ConnectionRequest.find({
             toUserId:loggedUser._id,
             status:"interested"
-        }).populate("fromUserId", "firstName lastName");
+        }).populate("fromUserId", allowedFields);
     
         res.json({
             message:"connections fetched!",
@@ -28,14 +29,14 @@ userAuth.get("/user/requests", UserAuth, async (req,res)=>{
 userAuth.get("/user/connections", UserAuth, async(req,res)=>{
     try{
         const loggedUser = req.User;
-
+        const allowedFields = "firstName lastName gender skills about userPhoto age";
         const connections = await ConnectionRequest.find({
             $or:[
                 {toUserId:loggedUser._id, status:"accepted"},
                 {fromUserId:loggedUser._id, status:"accepted"}
             ]
-        }).populate("fromUserId","firstName lastName")
-            .populate("toUserId","firstName lastName");
+        }).populate("fromUserId",allowedFields)
+            .populate("toUserId",allowedFields);
     
         const data = connections.map((row) => {
             if(row.fromUserId._id.toString() == loggedUser._id.toString()){
@@ -59,13 +60,13 @@ userAuth.get("/feed", UserAuth, async(req,res)=>{
         let limit = parseInt(req.query.limit) || 10;
         limit = limit>50 ? 50 : limit;
         const size = (page-1) * limit;
+        const allowedFields = "firstName lastName gender skills about userPhoto age";
         const connections = await ConnectionRequest.find({
             $or:[
                 {fromUserId: loggedUser._id},
                 {toUserId:loggedUser._id}
             ]
         }).select("fromUserId toUserId");
-
         const ignoredConnections = new Set();
         connections.forEach((req)=>{
             ignoredConnections.add(req.fromUserId.toString());
@@ -73,12 +74,11 @@ userAuth.get("/feed", UserAuth, async(req,res)=>{
         });
         
         const usersFeed = await User.find({
-            // $and:[
-            //     {_id: {$nin: Array.from(ignoredConnections)}},
-            //     {_id :{$ne: loggedUser._id}}
-            // ]
-            _id: {$nin: Array.from(ignoredConnections)}
-        }).select("firstName lastName gender").skip(size).limit(limit);
+            $and:[
+                {_id: {$nin: Array.from(ignoredConnections)}},
+                {_id :{$ne: loggedUser._id}}    
+            ]
+        }).select(allowedFields).skip(size).limit(limit);
         res.send(usersFeed);
     }
     catch(err){

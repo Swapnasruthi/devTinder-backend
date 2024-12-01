@@ -3,7 +3,14 @@ const app = express();
 const connectDb = require("./src/config/databases");
 const User = require("./src/models/user");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
+app.use(cors(
+    {
+        origin:"http://localhost:5173",
+        credentials:true
+    }
+));
 app.use(cookieParser());  //--> to read cookies from the request.
 app.use(express.json());  //--> to read json data from the Db.
 

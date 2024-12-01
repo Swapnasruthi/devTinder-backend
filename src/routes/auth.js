@@ -24,7 +24,10 @@ authRouter.post("/signup",async (req,res)=>{
         });
        
         await user.save();
-        res.send("user added successfully!")
+        const token = await user.createToken();
+
+        res.cookie("token",token);
+        res.send(user);
     }
     catch(err){
         res.status(400).send("error saving the user"+err.message);
@@ -46,7 +49,7 @@ authRouter.post("/login", async (req,res)=>{
             const token = await user.createToken();
 
             res.cookie("token",token);
-            res.send("Login successfull!");
+            res.send(user);
     
         }
         else{
@@ -54,7 +57,7 @@ authRouter.post("/login", async (req,res)=>{
         }
     }
     catch(err){
-        res.status(500).send("Error:"+err.message);
+        res.status(400).send(err.message);
     }
 
 });
