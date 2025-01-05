@@ -8,9 +8,12 @@ const cors = require("cors");
 app.use(cors(
     {
         origin:"http://localhost:5173",
+        methods: ['GET', 'POST', 'PATCH', 'DELETE'],
         credentials:true
     }
 ));
+
+app.options('*', cors());
 app.use(cookieParser());  //--> to read cookies from the request.
 app.use(express.json());  //--> to read json data from the Db.
 
@@ -61,12 +64,12 @@ app.delete("/user",async (req,res)=>{
 //api to update a user.
 
 
-
+const PORT = process.env.PORT || 3000;
 connectDb()
 .then(
     ()=>{
         console.log("connected successfully!");
-        app.listen(3000,()=>{
+        app.listen(PORT,()=>{
             console.log("server connected at 3000 successfully!");
         });
     }
