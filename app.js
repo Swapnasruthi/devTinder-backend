@@ -64,7 +64,7 @@ app.delete("/user",async (req,res)=>{
 //api to update a user.
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 connectDb()
 .then(
     ()=>{

@@ -3,7 +3,9 @@ const User = require("../models/user");
 const UserAuth = async (req,res,next)=>{
                       //read the token
                       try{
+                        // console.log('Token:', req.cookies.token);
                         const {token} = req.cookies;
+                        
                      
                       //verify the token
                         if(!token){
