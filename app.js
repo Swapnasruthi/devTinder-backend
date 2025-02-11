@@ -70,7 +70,7 @@ connectDb()
     ()=>{
         console.log("connected successfully!");
         app.listen(PORT,()=>{
-            console.log("server connected at 3000 successfully!");
+            console.log("server connected at"+PORT+" successfully!");
         });
     }
        
