@@ -7,7 +7,7 @@ const cors = require("cors");
 
 app.use(cors(
     {
-        origin:"http://localhost:5173",
+        origin:"http://13.61.21.109/",
         methods: ['GET', 'POST', 'PATCH', 'DELETE'],
         credentials:true
     }
