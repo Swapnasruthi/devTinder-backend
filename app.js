@@ -4,6 +4,8 @@ const connectDb = require("./src/config/databases");
 const User = require("./src/models/user");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+require('dotenv').config();
+
 
 app.use(cors(
     {
