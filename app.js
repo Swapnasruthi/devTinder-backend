@@ -4,6 +4,9 @@ const connectDb = require("./src/config/databases");
 const User = require("./src/models/user");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const http = require("http");
+const initialise = require("./src/utils/socket");
+
 require('dotenv').config();
 
 
@@ -64,6 +67,8 @@ app.delete("/user",async (req,res)=>{
 });
 
 //api to update a user.
+const server = http.createServer(app);
+initialise(server);
 
 
 const PORT = process.env.PORT || 4000;
@@ -71,8 +76,8 @@ connectDb()
 .then(
     ()=>{
         console.log("connected successfully!");
-        app.listen(PORT,()=>{
-            console.log("server connected at"+PORT+" successfully!");
+        server.listen(PORT,()=>{
+            console.log("server connected at "+PORT+" successfully!");
         });
     }
        
