@@ -28,7 +28,9 @@ const profileAuth = require("./src/routes/profile");
 const authRouter = require("./src/routes/auth");
 const requestAuth = require("./src/routes/request");
 const userAuth = require("./src/routes/user");
+const chatRouter = require("./src/routes/chat");
 
+app.use("/",chatRouter);
 app.use("/",profileAuth);
 app.use("/",requestAuth);
 app.use("/",authRouter);
